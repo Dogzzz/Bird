@@ -1,0 +1,72 @@
+import pygame, sys
+from pygame.locals import*
+import random
+
+
+clock = pygame.time.Clock()
+pygame.init()
+
+GameWidth = 1000
+GameHeight = 650
+x_change = 0
+y_change = 0
+Speed = 5
+
+Display = pygame.display.set_mode((GameWidth, GameHeight))
+Display_Rect = Display.get_rect()
+background = pygame.image.load('Untitled-1.jpg').convert()
+
+class Character():
+    def __init__(self):
+        self.x = GameWidth/2
+        self.y = GameHeight/2
+        self.sizex = 75
+        self.sizey = 67
+        self.Rect = pygame.Rect(self.x, self.y, self.sizex, self.sizey)
+    def Image(self, Image):
+        self.Image = Image
+
+Player = Character()
+Player.Image(pygame.image.load('images.jpg').convert())
+
+GameIsPlaying = True
+
+def MovePlayer(x, y):
+    Player.x += x
+    Player.y += y
+    Player.Rect = pygame.Rect(Player.x, Player.y, Player.sizex, Player.sizey)
+
+def BoxContains(x, y):
+    if Player.Rect.right > GameWidth: x = -2
+    elif Player.Rect.left < 0: x = 2
+    elif Player.Rect.top < 0: y = 2
+    elif Player.Rect.bottom > GameHeight: y = -2
+    MovePlayer(x, y)
+
+while GameIsPlaying == True:
+
+    clock.tick(60)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+        
+        elif event.type == KEYDOWN:
+            #if event.key == K_f: Check()
+            if event.key == K_a or event.key == K_LEFT: x_change = -1*Speed
+            if event.key == K_d or event.key == K_RIGHT: x_change = Speed
+            if event.key == K_w or event.key == K_UP: y_change = -1*Speed
+            if event.key == K_s or event.key == K_DOWN: y_change = Speed
+               
+        elif event.type == KEYUP:
+            if event.key == K_a or event.key == K_RIGHT :x_change = 0
+            elif event.key == K_d or event.key == K_LEFT: x_change = 0 
+            elif event.key == K_w  or event.key == K_UP :y_change = 0
+            elif event.key == K_s or event.key == K_DOWN: y_change = 0 
+    if Display_Rect.contains(Player.Rect) == False:
+        BoxContains(x_change, y_change)
+    else: MovePlayer(x_change, y_change)
+    
+    Display.blit(background, (0,0))
+    Display.blit(Player.Image,(Player.x, Player.y))
+    pygame.display.update()
